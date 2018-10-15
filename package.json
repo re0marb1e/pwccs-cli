@@ -1,0 +1,19 @@
+{
+  "name": "pwcss-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "re0marb1e",
+  "license": "MIT",
+  "bin": {
+    "pwcss-cli": "./bin/cli"
+  },
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.19.0",
+    "lodash": "^4.17.11"
+  }
+}
