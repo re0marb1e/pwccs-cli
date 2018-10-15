@@ -6,12 +6,12 @@ cli for creating a project with conventional commits specification.
 
 ### Install
 
-npm install -g pwccs-cli
+`npm install -g pwccs-cli`
 
 ### Use 
 
-pwcss-cli init pwcss-project
+`pwcss-cli init pwcss-project`
 
 ## License
 
-MIT
+[MIT](https://github.com/re0marb1e/pwccs-cli/blob/master/LICENSE)
