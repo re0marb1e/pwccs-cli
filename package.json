@@ -1,14 +1,22 @@
 {
   "name": "pwcss-cli",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "cli for creating a project with conventional commits specification",
+  "author": "re0marb1e <re0marb1e@outlook.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/re0marb1e/pwccs-cli"
+  },
+  "keywords": [
+    "conventional-commits",
+    "commintlint",
+    "husky"
+  ],
+  "hompage": "https://github.com/re0marb1e/pwccs-cli",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "release": "standard-version"
   },
-  "author": "re0marb1e",
-  "license": "MIT",
   "bin": {
     "pwcss-cli": "./bin/cli"
   },
