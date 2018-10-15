@@ -1,6 +1,6 @@
 {
   "name": "pwcss-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "cli for creating a project with conventional commits specification",
   "author": "re0marb1e <re0marb1e@outlook.com>",
   "license": "MIT",
@@ -23,7 +23,8 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "commander": "^2.19.0",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.2.1",

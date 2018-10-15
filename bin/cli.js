@@ -9,30 +9,33 @@ const { spawn, spawnSync} = require('child_process');
 const program = require('commander');
 const chalk = require('chalk');
 const _ = require('lodash');
+const validateProjectName = require('validate-npm-package-name');
 
 const huskyConf = require('../config/husky.config');
 const standardVersionConf = require('../config/standard-version.config');
 
 program.version('0.1.0', '-v, --version');
 
-program.command('init <projectName>')
-    .action((projectName, cmd) => {
-        createProject(projectName);
+program.command('init <projectDir>')
+    .action((projectDir, cmd) => {
+        createProject(projectDir);
     });
 
 program.parse(process.argv);
 
-function createProject(projectName){
-    const root = path.resolve(projectName);
-    const appName = path.basename(root);
+function createProject(projectDir){
+    const root = path.resolve(projectDir);
+    const projectName = path.basename(root);
 
-    console.log(`Creating a project in ${chalk.green(root)}.`);
+    checkProjectName(projectName);
+
+    console.log(`Creating a project with conventional commits specification in ${chalk.green(root)}.`);
     console.log();
 
-    fs.mkdirSync(projectName);
+    fs.mkdirSync(projectDir);
 
     let packageJson = {
-        name: appName,
+        name: projectName,
         version: '0.1.0'
     };
     packageJson = appendHuskyConfig(packageJson);
@@ -61,7 +64,43 @@ function createProject(projectName){
     ].concat(dependencies);
     spawnSync(command, args, { stdio: 'inherit' });
 
+    // git commit
     gitFirstCommitSync();
+}
+
+function checkProjectName(projectName){
+    const validationResult = validateProjectName(projectName);
+    if (!validationResult.validForNewPackages) {
+        console.error(
+            `Could not create a project called ${chalk.red(`"${projectName}"`)} because of npm naming restrictions:`
+            );
+        printValidationResults(validationResult.errors);
+        printValidationResults(validationResult.warnings);
+        process.exit(1);
+    }
+  
+    const dependencies = ['@commitlint/config-conventional', '@commitlint/cli', 'husky', 'standard-version'].sort();
+    if (dependencies.indexOf(projectName) >= 0) {
+        console.error(
+            chalk.red(
+                `We cannot create a project called ${chalk.green(
+                    projectName
+                )} because a dependency with the same name exists.\n` +
+                `Due to the way npm works, the following names are not allowed:\n\n`
+            ) +
+            chalk.cyan(dependencies.map(depName => `  ${depName}`).join('\n')) +
+            chalk.red('\n\nPlease choose a different project name.')
+        );
+        process.exit(1);
+    }
+}
+
+function printValidationResults(results) {
+    if (typeof results !== 'undefined') {
+        results.forEach(error => {
+            console.error(chalk.red(`  *  ${error}`));
+        });
+    }
 }
 
 function appendHuskyConfig(packageJson){
