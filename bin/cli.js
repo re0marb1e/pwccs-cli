@@ -138,7 +138,6 @@ function gitFirstCommitSync() {
     spawnSync("git", ["commit", "-m", `build: initial commit from pwcss-cli@${curPackageJson.version}`], { stdio: 'inherit' });
 }
 
-// TODO: remove dependency on commitizen
 function commitizenInitSync(){
     const command = "commitizen";
     const args = ["init", "cz-conventional-changelog" , "--save"];
