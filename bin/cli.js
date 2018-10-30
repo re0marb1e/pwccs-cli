@@ -4,13 +4,14 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const process = require('process');
-const { spawn, spawnSync} = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 
 const program = require('commander');
 const chalk = require('chalk');
 const _ = require('lodash');
 const validateProjectName = require('validate-npm-package-name');
 
+const curPackageJson = require('../package.json');
 const huskyConf = require('../config/husky.config');
 const standardVersionConf = require('../config/standard-version.config');
 
@@ -57,7 +58,7 @@ function createProject(projectDir){
 
     // npm install
     const command = 'npm';
-    const dependencies = ['@commitlint/config-conventional', '@commitlint/cli', 'husky', 'standard-version'];
+    const dependencies = ['@commitlint/config-conventional@^7.1.2', '@commitlint/cli@^7.2.1', 'husky@^1.1.2', 'standard-version@^4.4.0'];
     const args = [
       'install',
       '--save-dev',
@@ -134,9 +135,10 @@ function gitInitSync(){
 
 function gitFirstCommitSync() {
     spawnSync("git", ["add", "."], { stdio: 'inherit' });
-    spawnSync("git", ["commit", "-m", "build: initial commit from pwcss-cli"], { stdio: 'inherit' });
+    spawnSync("git", ["commit", "-m", `build: initial commit from pwcss-cli@${curPackageJson.version}`], { stdio: 'inherit' });
 }
 
+// TODO: remove dependency on commitizen
 function commitizenInitSync(){
     const command = "commitizen";
     const args = ["init", "cz-conventional-changelog" , "--save"];
