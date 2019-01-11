@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const process = require('process');
-const { spawn, spawnSync } = require('child_process');
+const { spawnSync } = require('child_process');
 
 const program = require('commander');
 const chalk = require('chalk');
@@ -24,7 +24,7 @@ program.command('init <projectDir>')
 
 program.parse(process.argv);
 
-function createProject(projectDir){
+function createProject(projectDir) {
     const root = path.resolve(projectDir);
     const projectName = path.basename(root);
 
@@ -60,8 +60,8 @@ function createProject(projectDir){
     const command = 'npm';
     const dependencies = ['@commitlint/config-conventional@^7.1.2', '@commitlint/cli@^7.2.1', 'husky@^1.1.2', 'standard-version@^4.4.0'];
     const args = [
-      'install',
-      '--save-dev',
+        'install',
+        '--save-dev',
     ].concat(dependencies);
     spawnSync(command, args, { stdio: 'inherit' });
 
@@ -69,17 +69,17 @@ function createProject(projectDir){
     gitFirstCommitSync();
 }
 
-function checkProjectName(projectName){
+function checkProjectName(projectName) {
     const validationResult = validateProjectName(projectName);
     if (!validationResult.validForNewPackages) {
         console.error(
             `Could not create a project called ${chalk.red(`"${projectName}"`)} because of npm naming restrictions:`
-            );
+        );
         printValidationResults(validationResult.errors);
         printValidationResults(validationResult.warnings);
         process.exit(1);
     }
-  
+
     const dependencies = ['@commitlint/config-conventional', '@commitlint/cli', 'husky', 'standard-version'].sort();
     if (dependencies.indexOf(projectName) >= 0) {
         console.error(
@@ -104,23 +104,29 @@ function printValidationResults(results) {
     }
 }
 
-function appendHuskyConfig(packageJson){
+function appendHuskyConfig(packageJson) {
     return _.merge(packageJson, huskyConf());
 }
 
-function appendStandardVersionConfig(packageJson){
-    return _.merge(packageJson, standardVersionConf.config(),standardVersionConf.scripts());
+function appendStandardVersionConfig(packageJson) {
+    return _.merge(packageJson, standardVersionConf.config(), standardVersionConf.scripts());
 }
 
-function configCommitlintSync(){
-    const commitlintConf = "module.exports = {extends: ['@commitlint/config-conventional']}";
+function configCommitlintSync() {
+    const commitlintConf = "module.exports = {extends: ['./commitlint.rule']}";
     fs.writeFileSync(
         path.join('./', 'commitlint.config.js'),
         commitlintConf + os.EOL
     );
+
+    const commitlintRuleConf = fs.readFileSync(path.join(__dirname, '../commitlint.rule.js')).toString();
+    fs.writeFileSync(
+        path.join('./', 'commitlint.rule.js'),
+        commitlintRuleConf + os.EOL
+    );
 }
 
-function gitInitSync(){
+function gitInitSync() {
     // git init
     const command = "git";
     const args = ["init"];
@@ -133,13 +139,13 @@ function gitInitSync(){
     );
 }
 
+function commitizenInitSync() {
+    const command = "commitizen";
+    const args = ["init", "cz-conventional-changelog", "--save"];
+    spawnSync(command, args);
+}
+
 function gitFirstCommitSync() {
     spawnSync("git", ["add", "."], { stdio: 'inherit' });
     spawnSync("git", ["commit", "-m", `build: initial commit from pwcss-cli@${curPackageJson.version}`], { stdio: 'inherit' });
-}
-
-function commitizenInitSync(){
-    const command = "commitizen";
-    const args = ["init", "cz-conventional-changelog" , "--save"];
-    spawnSync(command, args);
 }
